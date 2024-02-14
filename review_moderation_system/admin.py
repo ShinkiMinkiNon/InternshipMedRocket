@@ -30,6 +30,8 @@ class Review(admin.ModelAdmin):
     search_fields = ['doctor__name', 'original_review', 'ip_address', 'user__username']
     readonly_fields = ['date', 'original_review']
 
+    ordering = []
+
     def has_change_permission(self, request, obj=None):
         return False
 

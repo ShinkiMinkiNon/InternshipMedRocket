@@ -25,7 +25,7 @@ class Review(models.Model):
     original_review = models.TextField()
     processed_review = models.TextField()
     ip_address = models.GenericIPAddressField()
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"Review for {self.doctor.name} from {self.user} on {self.date}"
