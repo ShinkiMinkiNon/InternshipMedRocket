@@ -26,20 +26,17 @@ class DoctorAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class Review(admin.ModelAdmin):
-    list_display = ['doctor', 'date', 'original_review', 'processed_review', 'ip_address', 'user']
-    search_fields = ['doctor__name', 'original_review', 'ip_address', 'user__username']
-    readonly_fields = ['date', 'original_review']
+    list_display = ['doctor', 'date_time_of_review', 'original_review', 'processed_review', 'ip_address', 'user']
+    search_fields = ['doctor__name', 'original_review', 'user__username']
+    readonly_fields = ['date_time_of_review', 'original_review']
 
     ordering = []
 
     def has_change_permission(self, request, obj=None):
         return False
 
-    # fieldsets = [
-    #     (None, {'fields': ['doctor__name', 'ip_address', 'user', '']}),
-    #     ('Review', {'fields': ['processed_review'], 'classes': ['wide']})
-    # ]
-    #
-    # formfield_overrides = {
-    #     models.TextField: {'widget': forms.Textarea(attrs={'rows': 5, 'cols': 10})}
-    # }
+    fieldsets = [
+        (None, {'fields': ['doctor', 'date_time_of_review', 'user']}),
+        ('Review', {'fields': ['processed_review', 'original_review'], 'classes': ['wide']}),
+        ('IP Address', {'fields': ['ip_address'], 'classes': ['collapse']}),
+    ]
