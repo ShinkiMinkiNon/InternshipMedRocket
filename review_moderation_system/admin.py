@@ -1,5 +1,44 @@
 from django.contrib import admin
 from .models import *
+from django import forms
+
+
+class ReviewAdminForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.initial_review = self.instance.review.original_review
+
+    def clean_original_review(self):
+        initial_review = self.initial_review
+        new_review = self.cleaned_data['original_review']
+        if initial_review != new_review:
+            self.fields['original_review'].widget.attrs['readonly'] = True
+        return new_review
+
+
+@admin.register(Review)
+class Review(admin.ModelAdmin):
+    list_display = ['doctor', 'review_created_datetime', 'original_review', 'processed_review', 'ip_address', 'user']
+    search_fields = ['doctor__name', 'original_review', 'user__username']
+    readonly_fields = ['review_created_datetime']
+
+    #   Исправить вот это, чтобы можно было через админку новые отзывы добавлять
+    #   и чтобы все поля были доступны только до первого изменения
+
+    ordering = []
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    fieldsets = [
+        (None, {'fields': ['doctor', 'review_created_datetime', 'user']}),
+        ('Review', {'fields': ['processed_review', 'original_review'], 'classes': ['wide']}),
+        ('IP Address', {'fields': ['ip_address'], 'classes': ['collapse']}),
+    ]
 
 
 @admin.register(Specialty)
@@ -21,23 +60,3 @@ class ExceptionAdmin(admin.ModelAdmin):
 class DoctorAdmin(admin.ModelAdmin):
     search_fields = ['name']
     list_display = ['name']
-
-
-@admin.register(Review)
-class Review(admin.ModelAdmin):
-    list_display = ['doctor', 'review_created_datetime', 'original_review', 'processed_review', 'ip_address', 'user']
-    search_fields = ['doctor__name', 'original_review', 'user__username']
-    readonly_fields = ['review_created_datetime', 'original_review']
-
-    #   Исправить вот это, чтобы можно было через админку новые отзывы добавлять
-
-    ordering = []
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-    fieldsets = [
-        (None, {'fields': ['doctor', 'review_created_datetime', 'user']}),
-        ('Review', {'fields': ['processed_review', 'original_review'], 'classes': ['wide']}),
-        ('IP Address', {'fields': ['ip_address'], 'classes': ['collapse']}),
-    ]
