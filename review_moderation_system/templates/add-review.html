@@ -5,11 +5,12 @@
     <title>Добавление отзыва для {{ doctor.name }}</title>
 </head>
 <body>
-    <h2>Добавление отзыва для {{ doctor.name }}</h2>
-    {% csrf_token %}
+    <h1>Оставить отзыв</h1>
+    <h2>{{ doctor.name }}</h2>
+    {{ doctor.specialties }}
     <form method="POST">
-        <label for="review_text">Текст отзыва</label><br>
-        <textarea name="review_text" id="review_text" cols="50" rows="4"></textarea><br><br>
+        {% csrf_token %}
+        {{ form.as_p }}
         <input type="submit" value="Отправить отзыв">
     </form>
 </body>
