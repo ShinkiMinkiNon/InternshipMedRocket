@@ -59,5 +59,5 @@ class ExceptionAdmin(admin.ModelAdmin):
 
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
-    search_fields = ['name']
-    list_display = ['name']
+    search_fields = ['full_name']
+    list_display = ['full_name']

@@ -14,17 +14,21 @@ class Specialty(models.Model):
 
 
 class Doctor(models.Model):
-    #   Распихать ФИО на 3 отдельные переменные, каким-то образом соединить воедино через properties Python
-
-    name = models.CharField(max_length=200, verbose_name="Врач")
+    first_name = models.CharField(max_length=100, verbose_name="Имя")
+    last_name = models.CharField(max_length=100, verbose_name="Фамилия")
+    middle_name = models.CharField(max_length=100, verbose_name="Отчество")
     specialties = models.ManyToManyField(Specialty, related_name='doctors', verbose_name="Специальности")
 
     class Meta:
         verbose_name = 'Врач'
         verbose_name_plural = 'Врачи'
 
+    @property
+    def full_name(self):
+        return f"{self.last_name} {self.first_name} {self.middle_name}"
+
     def __str__(self):
-        return self.name
+        return self.full_name
 
 
 class Review(models.Model):
