@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django import forms
 from .models import *
 
 
@@ -26,9 +25,11 @@ class DoctorAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class Review(admin.ModelAdmin):
-    list_display = ['doctor', 'date_time_of_review', 'original_review', 'processed_review', 'ip_address', 'user']
+    list_display = ['doctor', 'review_created_datetime', 'original_review', 'processed_review', 'ip_address', 'user']
     search_fields = ['doctor__name', 'original_review', 'user__username']
-    readonly_fields = ['date_time_of_review', 'original_review']
+    readonly_fields = ['review_created_datetime', 'original_review']
+
+    #   Исправить вот это, чтобы можно было через админку новые отзывы добавлять
 
     ordering = []
 
@@ -36,7 +37,7 @@ class Review(admin.ModelAdmin):
         return False
 
     fieldsets = [
-        (None, {'fields': ['doctor', 'date_time_of_review', 'user']}),
+        (None, {'fields': ['doctor', 'review_created_datetime', 'user']}),
         ('Review', {'fields': ['processed_review', 'original_review'], 'classes': ['wide']}),
         ('IP Address', {'fields': ['ip_address'], 'classes': ['collapse']}),
     ]
