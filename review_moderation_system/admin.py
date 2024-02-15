@@ -17,6 +17,7 @@ class ReviewAdminForm(forms.ModelForm):
         new_review = self.cleaned_data['original_review']
         if initial_review != new_review:
             self.fields['original_review'].widget.attrs['readonly'] = True
+            self.fields['processed_review'].widget.attrs['readonly'] = False
         return new_review
 
 
@@ -36,7 +37,7 @@ class Review(admin.ModelAdmin):
 
     fieldsets = [
         (None, {'fields': ['doctor', 'review_created_datetime', 'user']}),
-        ('Review', {'fields': ['processed_review', 'original_review'], 'classes': ['wide']}),
+        ('Review', {'fields': ['original_review', 'processed_review'], 'classes': ['wide']}),
         ('IP Address', {'fields': ['ip_address'], 'classes': ['collapse']}),
     ]
 
