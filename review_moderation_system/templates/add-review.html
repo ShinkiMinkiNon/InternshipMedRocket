@@ -2,18 +2,20 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Добавление отзыва для {{ doctor.name }}</title>
+    <title>Добавление отзыва для {{ doctor.full_name }}</title>
 </head>
 <body>
     <h1>Оставить отзыв</h1>
     <h2>{{ doctor.full_name }}</h2>
-    {% if doctor.specialties.all|length == 0 %}
-    	-
-    {% else %}
-        {% for specialty in doctor.specialties.all %}
-        	{{ specialty.name }}{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    {% endif %}
+    <p>Специальности:
+        {% if doctor.specialties.all|length == 0 %}
+            -
+        {% else %}
+            {% for specialty in doctor.specialties.all %}
+                {{ specialty.name }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        {% endif %}
+    </p>
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}

@@ -1,24 +1,5 @@
 from django.contrib import admin
 from .models import *
-from django import forms
-
-
-# class ReviewAdminForm(forms.ModelForm):
-#     class Meta:
-#         model = Review
-#         fields = '__all__'
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.initial_review = self.instance.review.original_review
-#
-#     def clean_original_review(self):
-#         initial_review = self.initial_review
-#         new_review = self.cleaned_data['original_review']
-#         if initial_review != new_review:
-#             self.fields['original_review'].widget.attrs['readonly'] = True
-#             self.fields['processed_review'].widget.attrs['readonly'] = False
-#         return new_review
 
 
 @admin.register(Review)

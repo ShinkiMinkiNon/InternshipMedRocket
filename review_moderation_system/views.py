@@ -1,27 +1,32 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpRequest
 
+
 from .forms import ReviewForm
-from .models import Doctor
+from .models import Doctor, Review
 
 
-def add_review(request: HttpRequest, doctor_id) -> HttpResponse:
-    #   Накинуть валидаторов, что происходит когда отправляют форму, убрать возможность повторной отправки
-    #   Понять где тут подтягиваются специальности и выбрать между select_ и prefetch_ related
-    #
-
-    doctor = Doctor.objects.get(id=doctor_id)
+def add_review(request, doctor_id):
+    doctor = Doctor.objects.prefetch_related('specialties').get(id=doctor_id)
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
-            review_text = request.POST['review_text']
+            review_text = form.cleaned_data['review_text']
             if len(review_text) < 100:
-                return HttpResponse('Должно быть хотя бы 100 символов')
+                # Если длина отзыва меньше 100 символов, возвращаем сообщение об ошибке
+                return HttpResponse('Должно быть хотя бы 100 символов', status=400)
             else:
-                return HttpResponse('Отзыв успешно отправлен')
+                # Сохраняем отзыв и перенаправляем пользователя
+                review = Review.objects.create()
+                review.owner = form.cleaned_data['review_text']
+                review.doctor = doctor
+                review.ip_address = request.META.get('REMOTE_ADDR')
+                if request.user.is_authenticated:
+                    review.user = request.user
+                review.save()
+                # После успешного сохранения перенаправляем пользователя
+                return redirect('success_page_url')
     else:
-        initial_data = {
-            'doctor_name': doctor.full_name,
-        }
+        initial_data = {'doctor_name': doctor.full_name}
         form = ReviewForm(initial=initial_data)
-    return render(request, 'add-review.html', context={'form': form, 'doctor': doctor})
+    return render(request, 'add-review.html', {'form': form, 'doctor': doctor})

@@ -1,0 +1,58 @@
+Чтобы гарантировать, что IP-адрес отправителя формы сохраняется вместе с данными отзыва при каждой отправке формы, вам нужно сделать следующее:
+
+Добавить поле в модель отзыва: Сначала убедитесь, что в вашей модели Review есть поле для хранения IP-адреса отправителя.
+
+Использовать скрытое поле в форме: Добавьте скрытое поле в вашу форму, чтобы передать IP-адрес отправителя на сервер при отправке формы.
+
+Вот как это можно реализовать:
+
+python
+Copy code
+# models.py
+from django.db import models
+
+class Review(models.Model):
+    # Другие поля отзыва
+    ip_address = models.GenericIPAddressField()
+
+# forms.py
+from django import forms
+from .models import Review
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['review_text']  # Другие поля формы, не включая ip_address
+        widgets = {
+            'ip_address': forms.HiddenInput(),  # Создаем скрытое поле для ip_address
+        }
+
+# views.py
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from .models import Review
+from .forms import ReviewForm
+
+def add_review(request, doctor_id):
+    doctor = Doctor.objects.get(id=doctor_id)
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review_text = form.cleaned_data['review_text']
+            if len(review_text) < 100:
+                return HttpResponse('Должно быть хотя бы 100 символов', status=400)
+            else:
+                # Создаем объект отзыва, заполняем поля из формы
+                review = form.save(commit=False)
+                review.doctor = doctor
+                # Получаем IP-адрес отправителя из скрытого поля формы
+                review.ip_address = request.POST.get('ip_address')
+                if request.user.is_authenticated:
+                    review.user = request.user
+                review.save()
+                return redirect('success_page_url')
+    else:
+        # Передаем форму с пустым скрытым полем ip_address
+        form = ReviewForm(initial={'ip_address': request.META.get('REMOTE_ADDR')})
+    return render(request, 'add-review.html', {'form': form, 'doctor': doctor})
+В этом примере создается скрытое поле ip_address в форме ReviewForm, которое заполняется значением IP-адреса отправителя при загрузке страницы с формой. При отправке формы этот IP-адрес передается на сервер и сохраняется в объекте отзыва.
