@@ -3,22 +3,22 @@ from .models import *
 from django import forms
 
 
-class ReviewAdminForm(forms.ModelForm):
-    class Meta:
-        model = Review
-        fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.initial_review = self.instance.review.original_review
-
-    def clean_original_review(self):
-        initial_review = self.initial_review
-        new_review = self.cleaned_data['original_review']
-        if initial_review != new_review:
-            self.fields['original_review'].widget.attrs['readonly'] = True
-            self.fields['processed_review'].widget.attrs['readonly'] = False
-        return new_review
+# class ReviewAdminForm(forms.ModelForm):
+#     class Meta:
+#         model = Review
+#         fields = '__all__'
+#
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.initial_review = self.instance.review.original_review
+#
+#     def clean_original_review(self):
+#         initial_review = self.initial_review
+#         new_review = self.cleaned_data['original_review']
+#         if initial_review != new_review:
+#             self.fields['original_review'].widget.attrs['readonly'] = True
+#             self.fields['processed_review'].widget.attrs['readonly'] = False
+#         return new_review
 
 
 @admin.register(Review)
@@ -27,17 +27,19 @@ class Review(admin.ModelAdmin):
     search_fields = ['doctor__name', 'original_review', 'user__username']
     readonly_fields = ['review_created_datetime']
 
-    #   Исправить вот это, чтобы можно было через админку новые отзывы добавлять
-    #   и чтобы все поля были доступны только до первого изменения
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return [field.name for field in obj._meta.fields if field.name != 'processed_review']
+        return ['processed_review', 'review_created_datetime']
 
     ordering = []
 
-    def has_change_permission(self, request, obj=None):
-        return False
-
     fieldsets = [
         (None, {'fields': ['doctor', 'review_created_datetime', 'user']}),
-        ('Review', {'fields': ['original_review', 'processed_review'], 'classes': ['wide']}),
+        ('Review', {'fields': ['original_review', 'processed_review'], 'classes': ['vLargeTextField', 'wide']}),
         ('IP Address', {'fields': ['ip_address'], 'classes': ['collapse']}),
     ]
 

@@ -21,7 +21,7 @@ def add_review(request: HttpRequest, doctor_id) -> HttpResponse:
                 return HttpResponse('Отзыв успешно отправлен')
     else:
         initial_data = {
-            'doctor_name': doctor.name,
+            'doctor_name': doctor.full_name,
         }
         form = ReviewForm(initial=initial_data)
     return render(request, 'add-review.html', context={'form': form, 'doctor': doctor})

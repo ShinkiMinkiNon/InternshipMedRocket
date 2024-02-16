@@ -35,7 +35,7 @@ class Review(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='reviews')
     review_created_datetime = models.DateTimeField(auto_now_add=True)
     original_review = models.CharField(max_length=1000, verbose_name="Оригинальный отзыв")
-    processed_review = models.CharField(max_length=1000, verbose_name="Обработанный отзыв")
+    processed_review = models.CharField(max_length=1000, verbose_name="Обработанный отзыв", null=True, blank=True)
     ip_address = models.GenericIPAddressField()
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviews')
 
@@ -44,9 +44,9 @@ class Review(models.Model):
         verbose_name_plural = 'Отзывы'
 
     def __str__(self):
-        return (f"Отзыв для: {self.doctor.name}\n"
-                f"От: {self.user}\n"
-                f"Когда: {self.review_created_datetime}")
+        return (f"Отзыв для: {self.doctor.full_name}. "
+                f"От: {self.user}. "
+                f"Когда: {self.review_created_datetime}.")
 
 
 class BanWord(models.Model):
