@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 from .models import *
 
 
@@ -7,6 +8,7 @@ class Review(admin.ModelAdmin):
     list_display = ['doctor', 'review_created_datetime', 'original_review', 'processed_review', 'ip_address', 'user']
     search_fields = ['doctor__name', 'original_review', 'user__username']
     readonly_fields = ['review_created_datetime']
+    raw_id_fields = ['doctor']
 
     def has_change_permission(self, request, obj=None):
         return True
@@ -23,6 +25,10 @@ class Review(admin.ModelAdmin):
         ('Review', {'fields': ['original_review', 'processed_review'], 'classes': ['vLargeTextField', 'wide']}),
         ('IP Address', {'fields': ['ip_address'], 'classes': ['collapse']}),
     ]
+
+    formfield_overrides = {
+        models.CharField: {'widget': forms.Textarea}
+    }
 
 
 @admin.register(Specialty)
