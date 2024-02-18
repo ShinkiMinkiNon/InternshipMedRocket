@@ -7,16 +7,14 @@ from .models import Doctor, Review
 
 
 def add_review(request: HttpRequest, doctor_id):
-    doctor = get_object_or_404(Doctor.objects.prefetch_related('specialties'))
+    doctor = get_object_or_404(Doctor.objects.prefetch_related('specialties'), id=doctor_id)
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
-            review_text = form.cleaned_data['review_text']
+            review_text = form.cleaned_data['original_review']
             if len(review_text) < 100:
                 return HttpResponse('Должно быть хотя бы 100 символов', status=400)
             else:
-
-                review_text = form.cleaned_data['review']
                 ip_address = request.META.get('REMOTE_ADDR')
                 user = request.user
                 review = Review.objects.create(

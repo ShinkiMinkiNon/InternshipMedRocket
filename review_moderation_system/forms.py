@@ -6,4 +6,4 @@ class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
         fields = ['original_review']
-    review = forms.CharField(max_length=1000, widget=forms.Textarea, label='Ваш отзыв: ')
+    original_review = forms.CharField(max_length=1000, widget=forms.Textarea, label='Ваш отзыв: ')

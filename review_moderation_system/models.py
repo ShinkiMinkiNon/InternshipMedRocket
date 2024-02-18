@@ -33,10 +33,10 @@ class Doctor(models.Model):
 
 class Review(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='reviews')
-    review_created_datetime = models.DateTimeField(auto_now_add=True)
+    review_created_datetime = models.DateTimeField(auto_now_add=True, verbose_name="Дата и время создания отзыва")
     original_review = models.CharField(max_length=1000, verbose_name="Оригинальный отзыв")
     processed_review = models.CharField(max_length=1000, verbose_name="Обработанный отзыв", null=True, blank=True)
-    ip_address = models.GenericIPAddressField()
+    ip_address = models.GenericIPAddressField(verbose_name="IP Адрес")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviews')
 
     class Meta:

@@ -15,15 +15,15 @@ class Review(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
-            return [field.name for field in obj._meta.fields if field.name != 'processed_review']
+            return ['review_created_datetime', 'original_review']
         return ['processed_review', 'review_created_datetime']
 
     ordering = []
 
     fieldsets = [
         (None, {'fields': ['doctor', 'review_created_datetime', 'user']}),
-        ('Review', {'fields': ['original_review', 'processed_review'], 'classes': ['vLargeTextField', 'wide']}),
-        ('IP Address', {'fields': ['ip_address'], 'classes': ['collapse']}),
+        ('Отзыв', {'fields': ['original_review', 'processed_review'], 'classes': ['vLargeTextField', 'wide']}),
+        ('IP Адрес', {'fields': ['ip_address'], 'classes': ['collapse']}),
     ]
 
     formfield_overrides = {
